@@ -6,6 +6,8 @@ import { Banner, CreatorCard, NFTCard } from '../components';
 import images from '../assets';
 import { NFTContext } from '../context/NFTContext';
 import { makeId } from '../utils/makeId';
+import { getCreators } from '../utils/getTopCreators';
+import { shortenAddress } from '../utils/shortenAddress';
 
 const Home = () => {
   const [hideButtons, setHideButtons] = useState(false);
@@ -19,7 +21,6 @@ const Home = () => {
     fetchNFTs()
       .then((items) => {
         setNfts(items);
-        console.log(items);
       });
   }, []);
 
@@ -54,6 +55,8 @@ const Home = () => {
     };
   }, []);
 
+  const topCreators = getCreators(nfts);
+
   return (
     <div className="flex justify-center sm:px-4 p-12">
       <div className="w-full minmd:w-4/5">
@@ -66,13 +69,13 @@ const Home = () => {
           <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">Best Creators</h1>
           <div ref={parentRef} className="relative flex-1 max-w-full flex mt-3">
             <div ref={scrollRef} className="flex flex-row w-max overflow-x-scroll no-scrollbar select-none">
-              {[6, 7, 8, 9, 10].map((i) => (
+              {topCreators.map((creator, i) => (
                 <CreatorCard
-                  key={`creator-${i}`}
-                  rank={i}
-                  creatorImg={images[`creator${i}`]}
-                  creatorName={`0x${makeId(3)}...${makeId(4)}`}
-                  creatorEths={10 - i * 0.5}
+                  key={creator.seller}
+                  rank={i + 1}
+                  creatorImg={images[`creator${i + 1}`]}
+                  creatorName={shortenAddress(creator.seller)}
+                  creatorEths={creator.sum}
                 />
               ))}
               {!hideButtons && (
